@@ -160,3 +160,188 @@ species
 setosa             5.006        3.428         1.462        0.246
 versicolor         5.936        2.770         4.260        1.326
 virginica          6.588        2.974         5.552        2.026
+
+Petal Dimensions:
+
+Setosa petals are distinctly smaller (max 1.9cm) compared to versicolor (minimum 3.0cm)
+
+Virginica has the largest petals (mean 5.55cm)
+
+Sepal Width:
+
+Setosa has significantly wider sepals (mean 3.43cm) compared to others (~2.87cm)
+
+Size Progression:
+
+Clear size progression: setosa < versicolor < virginica across all measurements
+
+Standard Deviations:
+
+Petal measurements show higher variability than sepal measurements
+
+Virginica shows the most variation in petal length (std=0.55)
+
+
+# Task 3: Data Visualization
+
+# Create at least four different types of visualizations:
+
+# Line chart showing trends over time (for example, a time-series of sales data).
+
+# Bar chart showing the comparison of a numerical value across categories (e.g., average petal length per species).
+
+# Histogram of a numerical column to understand its distribution.
+
+# Scatter plot to visualize the relationship between two numerical columns (e.g., sepal length vs. petal length).
+
+
+
+     import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Load and prepare data
+iris = sns.load_dataset('iris')
+
+# Create a time-series version by adding a dummy date column
+dates = pd.date_range(start='2023-01-01', periods=len(iris), freq='D')
+iris_with_time = iris.copy()
+iris_with_time['date'] = dates
+iris_with_time['cumulative_sepal_length'] = iris_with_time['sepal_length'].cumsum()
+
+# Set style
+sns.set_style("whitegrid")
+plt.figure(figsize=(16, 10))
+
+# 1. Line Chart (Trend over time)
+plt.subplot(2, 2, 1)
+sns.lineplot(x='date', y='cumulative_sepal_length', hue='species', 
+             data=iris_with_time, palette="husl", linewidth=2.5)
+plt.title('Cumulative Sepal Length Over Time', fontsize=14, pad=20)
+plt.xlabel('Date', fontsize=12)
+plt.ylabel('Cumulative Sepal Length (cm)', fontsize=12)
+plt.xticks(rotation=45)
+plt.legend(title='Species')
+
+# 2. Bar Chart (Comparison across categories)
+plt.subplot(2, 2, 2)
+mean_petal_length = iris.groupby('species')['petal_length'].mean().reset_index()
+bar_plot = sns.barplot(x='species', y='petal_length', data=mean_petal_length, 
+                       palette="coolwarm", edgecolor="black")
+plt.title('Average Petal Length by Species', fontsize=14, pad=20)
+plt.xlabel('Species', fontsize=12)
+plt.ylabel('Mean Petal Length (cm)', fontsize=12)
+
+# Add value labels on bars
+for p in bar_plot.patches:
+    bar_plot.annotate(f"{p.get_height():.2f}", 
+                     (p.get_x() + p.get_width() / 2., p.get_height()),
+                     ha='center', va='center', xytext=(0, 10), 
+                     textcoords='offset points')
+
+# 3. Histogram (Distribution of a numerical column)
+plt.subplot(2, 2, 3)
+sns.histplot(data=iris, x='sepal_width', bins=15, kde=True, 
+             hue='species', palette="viridis", alpha=0.6)
+plt.title('Distribution of Sepal Width by Species', fontsize=14, pad=20)
+plt.xlabel('Sepal Width (cm)', fontsize=12)
+plt.ylabel('Frequency', fontsize=12)
+plt.legend(title='Species')
+
+# 4. Scatter Plot (Relationship between two numerical columns)
+plt.subplot(2, 2, 4)
+scatter = sns.scatterplot(data=iris, x='sepal_length', y='petal_length', 
+                         hue='species', palette="rocket", s=100, 
+                         style='species', markers=["o", "s", "D"])
+plt.title('Sepal Length vs Petal Length', fontsize=14, pad=20)
+plt.xlabel('Sepal Length (cm)', fontsize=12)
+plt.ylabel('Petal Length (cm)', fontsize=12)
+
+# Add regression lines
+for species in iris['species'].unique():
+    sns.regplot(data=iris[iris['species']==species], 
+               x='sepal_length', y='petal_length', 
+               scatter=False, ci=None, truncate=True)
+
+plt.legend(title='Species', bbox_to_anchor=(1.05, 1), loc='upper left')
+
+# Final adjustments
+plt.tight_layout(pad=3.0)
+plt.suptitle('Iris Dataset Visual Analysis', y=1.02, fontsize=16)
+plt.savefig('iris_visualizations.png', bbox_inches='tight', dpi=300)
+plt.show()
+
+               # Key Visualizations Produced:
+# Line Chart:
+
+Shows cumulative sepal length over time (artificial timeline)
+
+Reveals growth patterns by species
+
+Virginica accumulates length fastest due to larger flowers
+
+# Bar Chart:
+
+Compares mean petal length across species
+
+Clear progression: setosa < versicolor < virginica
+
+Exact values displayed on bars (setosa: 1.46cm, virginica: 5.55cm)
+
+# Histogram:
+
+Distribution of sepal width with KDE curves
+
+Setosa shows distinct right-skewed distribution
+
+Versicolor and virginica overlap more
+
+# Scatter Plot:
+
+Relationship between sepal and petal length
+
+Strong positive correlation within each species
+
+Different clusters clearly visible
+
+Regression lines show species-specific trends
+
+# Customization Features:
+Consistent Styling: Professional whitegrid theme with uniform fonts
+
+# Enhanced Readability:
+
+Clear titles and axis labels
+
+Value labels on bar chart
+
+Legend placement optimization
+
+# Visual Enhancements:
+
+Different markers for species in scatter plot
+
+Semi-transparent histogram bars
+
+Color palettes optimized for color blindness
+
+# Technical Precision:
+
+Proper figure sizing and padding
+
+High-resolution export (300dpi)
+
+Tight layout to prevent overlap
+
+# Insights Revealed:
+Virginica consistently shows the largest measurements
+
+Setosa is morphologically distinct in both size and proportions
+
+Strong linear relationships within species suggest consistent growth patterns
+
+Versicolor serves as an intermediate between the other two species
+
+
+
